@@ -13,12 +13,17 @@
 
 ```bash
 .
-├── main.py             # FastAPI app setup and launch
-├── agent.py            # Victim-side client agent (PowerShell executor)
-├── controllers.py      # REST API logic and endpoints
-├── excalibur.db        # SQLite database file
-├── index.html          # Frontend panel UI (macOS-styled)
-└── /panel              # Static frontend folder served by FastAPI
+C2/
+├── agent/
+│   └── agent.py
+├── backend/
+│   ├── controllers.py
+│   ├── excalibur.db
+│   └── main.py
+├── panel/
+│   └── index.html
+└── README.md
+
 ```
 
 ---
