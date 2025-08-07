@@ -38,13 +38,12 @@
 
 ## 🖥️ Web Interface
 
-The frontend is written in pure HTML/CSS/JS with a modern, polished UI inspired by macOS aesthetics.
+The frontend is written in pure HTML/CSS/JS with a minimalistic UI.
 
 ### Highlights:
-- 📊 Live Victim Table with metadata and command options
+- 📊 Victim Table with metadata and command options
 - 💾 Saved Commands modal with easy CRUD
 - ⚡ Quick command execution (custom or saved)
-- 🌐 Auto-refreshing victim list (every 10s)
 - 🔔 Toast notifications & confirmation modals
 
 ---
@@ -129,4 +128,4 @@ This project is released under the **MIT License**.
 
 ---
 
-> Built with ❤️ by hackers, for hackers — in the spirit of knowledge.
+> Built with ❤️ 
