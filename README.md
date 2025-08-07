@@ -12,7 +12,7 @@
 ## 🧩 Project Structure
 
 ```bash
-.
+
 C2/
 ├── agent/
 │   └── agent.py
